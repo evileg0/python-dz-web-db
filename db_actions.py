@@ -1,13 +1,10 @@
 import sqlite3
-import pandas as pd
 
 conn = sqlite3.connect('moex_db.db', check_same_thread=False)
 conn.row_factory = sqlite3.Row
-#query = "SELECT * FROM stocks;"
-#df = pd.read_sql(query, conn)
 
 def get_t_list():
-    query = "SELECT DISTINCT name, ticker FROM stocks;"
+    query = "SELECT DISTINCT name, ticker FROM stocks ORDER BY ticker ASC;"
     cursor = conn.cursor()
     cursor.execute(query)
     rows = cursor.fetchall()
