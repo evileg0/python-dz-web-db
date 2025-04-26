@@ -1,22 +1,23 @@
 import sqlite3
 
-conn = sqlite3.connect('moex_db.db', check_same_thread=False)
+conn = sqlite3.connect('sec_db_j.db', check_same_thread=False)
 conn.row_factory = sqlite3.Row
 
 def get_t_list():
-    query = "SELECT DISTINCT name, ticker FROM stocks ORDER BY ticker ASC;"
+    query = "SELECT DISTINCT SECID, SHORTNAME FROM stocks ORDER BY SECID ASC;"
     cursor = conn.cursor()
     cursor.execute(query)
     rows = cursor.fetchall()
-    result = [{"ticker": row["ticker"], "name": row["name"]} for row in rows]
+    result = [{"ticker": row["SECID"], "name": row["SHORTNAME"]} for row in rows]
     return result
 
 
-def get_data_by_ticker(ticker: str):
+def get_data_by_ticker(ticker: str, limit_rows: int):
     cursor = conn.cursor()
-    query = "SELECT name, ticker, percent, price, time FROM stocks WHERE ticker = ?;"
-    cursor.execute(query, (ticker,))
+    query = "SELECT SHORTNAME, SECID, PREVLEGALCLOSEPRICE, PREVDATE FROM stocks WHERE SECID = ? ORDER BY PREVDATE DESC " \
+            "LIMIT ?;"
+    cursor.execute(query, (ticker,limit_rows))
     rows = cursor.fetchall()
-    result = [{"ticker": row["ticker"], "name": row["name"], "percent": row["percent"], "price": row["price"],
-               "time": row["time"]} for row in rows]
+    result = [{"ticker": row["SECID"], "name": row["SHORTNAME"], "price": row["PREVLEGALCLOSEPRICE"],
+               "time": row["PREVDATE"]} for row in rows]
     return result
